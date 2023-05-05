@@ -19,6 +19,21 @@ class Player(pygame.sprite.Sprite):
         self.pos = pygame.math.Vector2(self.rect.center)
         self.speed = 400
 
+    def import_assets(self):
+        self.animations = {'up': [], 'down': [], 'left': [], 'right': [], 'up_idle': [], 'down_idle': [],
+                           'left_idle': [], 'right_idle': [], 'up_hoe': [], 'down_hoe': [], 'left_hoe': [],
+                           'right_hoe': [], 'up_axe': [], 'down_axe': [], 'left_axe': [], 'right_axe': [],
+                           'up_water': [], 'down_water': [], 'left_water': [], 'right_water': []}
+
+        for animation in self.animations.keys():
+            full_path = f'../graphics/character/{animation}'
+            self.animations[animation] = import_folder(full_path)
+
+    def animate(self, dt):
+        self.frame_index += 4 * dt
+        self.frame_index %= len(self.animations[self.status])
+        self.image = self.animations[self.status][int(self.frame_index)]
+
     def input(self):
         keys = pygame.key.get_pressed()
 
@@ -36,16 +51,6 @@ class Player(pygame.sprite.Sprite):
         else:
             self.direction.x = 0
 
-    def import_assets(self):
-        self.animations = {'up': [], 'down': [], 'left': [], 'right': [], 'up_idle': [], 'down_idle': [],
-                           'left_idle': [], 'right_idle': [], 'up_hoe': [], 'down_hoe': [], 'left_hoe': [],
-                           'right_hoe': [], 'up_axe': [], 'down_axe': [], 'left_axe': [], 'right_axe': [],
-                           'up_water': [], 'down_water': [], 'left_water': [], 'right_water': []}
-
-        for animation in self.animations.keys():
-            full_path = f'../graphics/character/{animation}'
-            self.animations[animation] = import_folder(full_path)
-
     def move(self, dt):
         if self.direction.magnitude() > 0:
             self.direction = self.direction.normalize()
@@ -59,3 +64,4 @@ class Player(pygame.sprite.Sprite):
     def update(self, dt):
         self.input()
         self.move(dt)
+        self.animate(dt)
