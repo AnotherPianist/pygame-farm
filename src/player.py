@@ -22,12 +22,18 @@ class Player(pygame.sprite.Sprite):
 
         self.timers = {
             'tool_use': Timer(350, self.use_tool),
-            'tool_switch': Timer(200)
+            'tool_switch': Timer(200),
+            'seed_use': Timer(350, self.use_seed),
+            'seed_switch': Timer(200)
         }
 
         self.tools = ['hoe', 'axe', 'water']
         self.tool_index = 0
         self.selected_tool = self.tools[self.tool_index]
+
+        self.seeds = ['corn', 'tomato']
+        self.seed_index = 0
+        self.selected_seed = self.seeds[self.seed_index]
 
     def import_assets(self):
         self.animations = {'up': [], 'down': [], 'left': [], 'right': [], 'up_idle': [], 'down_idle': [],
@@ -76,6 +82,16 @@ class Player(pygame.sprite.Sprite):
                 self.tool_index = (self.tool_index + 1) % len(self.tools)
                 self.selected_tool = self.tools[self.tool_index]
 
+            if keys[pygame.K_LCTRL]:
+                self.timers['seed_use'].activate()
+                self.direction = pygame.math.Vector2()
+                self.frame_index = 0
+
+            if keys[pygame.K_e] and not self.timers['seed_switch'].active:
+                self.timers['seed_switch'].activate()
+                self.seed_index = (self.seed_index + 1) % len(self.seeds)
+                self.selected_seed = self.seeds[self.seed_index]
+
     def get_status(self):
         if self.direction.magnitude() == 0:
             self.status = self.status.split('_')[0] + '_idle'
@@ -94,6 +110,9 @@ class Player(pygame.sprite.Sprite):
         self.rect.centery = self.pos.y
 
     def use_tool(self):
+        pass
+
+    def use_seed(self):
         pass
 
     def update_timers(self):
