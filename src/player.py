@@ -1,12 +1,18 @@
 import pygame.sprite
 
+from src.support import import_folder
+
 
 class Player(pygame.sprite.Sprite):
     def __init__(self, pos, group):
         super().__init__(group)
 
-        self.image = pygame.Surface((32, 64))
-        self.image.fill('green')
+        self.animations = {}
+        self.import_assets()
+        self.status = 'down_idle'
+        self.frame_index = 0
+
+        self.image = self.animations[self.status][self.frame_index]
         self.rect = self.image.get_rect(center=pos)
 
         self.direction = pygame.math.Vector2()
@@ -29,6 +35,16 @@ class Player(pygame.sprite.Sprite):
             self.direction.x = 1
         else:
             self.direction.x = 0
+
+    def import_assets(self):
+        self.animations = {'up': [], 'down': [], 'left': [], 'right': [], 'up_idle': [], 'down_idle': [],
+                           'left_idle': [], 'right_idle': [], 'up_hoe': [], 'down_hoe': [], 'left_hoe': [],
+                           'right_hoe': [], 'up_axe': [], 'down_axe': [], 'left_axe': [], 'right_axe': [],
+                           'up_water': [], 'down_water': [], 'left_water': [], 'right_water': []}
+
+        for animation in self.animations.keys():
+            full_path = f'../graphics/character/{animation}'
+            self.animations[animation] = import_folder(full_path)
 
     def move(self, dt):
         if self.direction.magnitude() > 0:
