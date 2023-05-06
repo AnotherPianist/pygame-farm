@@ -41,6 +41,9 @@ class Level:
         for obj in tmx_data.get_layer_by_name('Trees'):
             Tree((obj.x, obj.y), obj.image, [self.all_sprites, self.collision_sprites], obj.name)
 
+        for x, y, surf in tmx_data.get_layer_by_name('Collision').tiles():
+            Generic((x * TILE_SIZE, y * TILE_SIZE), pygame.Surface((TILE_SIZE, TILE_SIZE)), self.collision_sprites)
+
         Generic(
             pos=(0, 0),
             surf=pygame.image.load('../graphics/world/ground.png').convert_alpha(),
