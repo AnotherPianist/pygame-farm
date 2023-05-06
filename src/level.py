@@ -3,7 +3,7 @@ from pytmx.util_pygame import load_pygame
 
 from src.overlay import Overlay
 from src.player import Player
-from src.settings import LAYERS, SCREEN_WIDTH, SCREEN_HEIGHT, TILE_SIZE
+from src.settings import LAYERS, SCREEN_WIDTH, SCREEN_HEIGHT, TILE_SIZE, PLAYER_TOOL_OFFSET
 from src.sprites import Generic, Water, WildFlower, Tree
 from src.support import import_folder
 
@@ -14,6 +14,7 @@ class Level:
         self.display_surface = pygame.display.get_surface()
         self.all_sprites = CameraGroup()
         self.collision_sprites = pygame.sprite.Group()
+        self.tree_sprites = pygame.sprite.Group()
         self.setup()
         self.overlay = Overlay(self.player)
 
@@ -39,7 +40,7 @@ class Level:
             WildFlower((obj.x, obj.y), obj.image, [self.all_sprites, self.collision_sprites])
 
         for obj in tmx_data.get_layer_by_name('Trees'):
-            Tree((obj.x, obj.y), obj.image, [self.all_sprites, self.collision_sprites], obj.name)
+            Tree((obj.x, obj.y), obj.image, [self.all_sprites, self.collision_sprites, self.tree_sprites], obj.name)
 
         for x, y, surf in tmx_data.get_layer_by_name('Collision').tiles():
             Generic((x * TILE_SIZE, y * TILE_SIZE), pygame.Surface((TILE_SIZE, TILE_SIZE)), self.collision_sprites)
@@ -53,7 +54,7 @@ class Level:
 
         for obj in tmx_data.get_layer_by_name('Player'):
             if obj.name == 'Start':
-                self.player = Player((obj.x, obj.y), self.all_sprites, self.collision_sprites)
+                self.player = Player((obj.x, obj.y), self.all_sprites, self.collision_sprites, self.tree_sprites)
 
     def run(self, dt):
         self.all_sprites.custom_draw(self.player)
@@ -77,3 +78,11 @@ class CameraGroup(pygame.sprite.Group):
                     offset_rect = sprite.rect.copy()
                     offset_rect.center -= self.offset
                     self.display_surface.blit(sprite.image, offset_rect)
+
+                    if sprite == player:
+                        pygame.draw.rect(self.display_surface, 'red', offset_rect, 5)
+                        hitbox_rect = player.hitbox.copy()
+                        hitbox_rect.center = offset_rect.center
+                        pygame.draw.rect(self.display_surface, 'green', hitbox_rect, 5)
+                        target_pos = offset_rect.center + PLAYER_TOOL_OFFSET[player.status.split('_')[0]]
+                        pygame.draw.circle(self.display_surface, 'blue', target_pos, 5)

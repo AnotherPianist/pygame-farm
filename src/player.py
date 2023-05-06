@@ -1,12 +1,12 @@
 import pygame.sprite
 
-from src.settings import LAYERS
+from src.settings import LAYERS, PLAYER_TOOL_OFFSET
 from src.support import import_folder
 from src.timer import Timer
 
 
 class Player(pygame.sprite.Sprite):
-    def __init__(self, pos, group, collision_sprites):
+    def __init__(self, pos, group, collision_sprites, tree_sprites):
         super().__init__(group)
 
         self.animations = {}
@@ -39,6 +39,8 @@ class Player(pygame.sprite.Sprite):
         self.seeds = ['corn', 'tomato']
         self.seed_index = 0
         self.selected_seed = self.seeds[self.seed_index]
+
+        self.tree_sprites = tree_sprites
 
     def import_assets(self):
         self.animations = {'up': [], 'down': [], 'left': [], 'right': [], 'up_idle': [], 'down_idle': [],
@@ -138,7 +140,17 @@ class Player(pygame.sprite.Sprite):
         self.collision('vertical')
 
     def use_tool(self):
-        pass
+        if self.selected_tool == 'hoe':
+            pass
+        elif self.selected_tool == 'axe':
+            for tree in self.tree_sprites.sprites():
+                if tree.rect.collidepoint(self.target_pos):
+                    tree.damage()
+        elif self.selected_tool == 'water':
+            pass
+
+    def get_target_pos(self):
+        self.target_pos = self.rect.center + PLAYER_TOOL_OFFSET[self.status.split('_')[0]]
 
     def use_seed(self):
         pass
@@ -151,5 +163,6 @@ class Player(pygame.sprite.Sprite):
         self.input()
         self.get_status()
         self.update_timers()
+        self.get_target_pos()
         self.move(dt)
         self.animate(dt)
