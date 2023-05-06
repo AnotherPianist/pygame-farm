@@ -40,7 +40,8 @@ class Level:
             WildFlower((obj.x, obj.y), obj.image, [self.all_sprites, self.collision_sprites])
 
         for obj in tmx_data.get_layer_by_name('Trees'):
-            Tree((obj.x, obj.y), obj.image, [self.all_sprites, self.collision_sprites, self.tree_sprites], obj.name)
+            Tree((obj.x, obj.y), obj.image, [self.all_sprites, self.collision_sprites, self.tree_sprites], obj.name,
+                 self.player_add)
 
         for x, y, surf in tmx_data.get_layer_by_name('Collision').tiles():
             Generic((x * TILE_SIZE, y * TILE_SIZE), pygame.Surface((TILE_SIZE, TILE_SIZE)), self.collision_sprites)
@@ -55,6 +56,9 @@ class Level:
         for obj in tmx_data.get_layer_by_name('Player'):
             if obj.name == 'Start':
                 self.player = Player((obj.x, obj.y), self.all_sprites, self.collision_sprites, self.tree_sprites)
+
+    def player_add(self, item):
+        self.player.item_inventory[item] += 1
 
     def run(self, dt):
         self.all_sprites.custom_draw(self.player)

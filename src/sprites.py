@@ -3,7 +3,6 @@ from random import random, choice
 import pygame
 
 from src.settings import LAYERS, APPLE_POS
-from src.timer import Timer
 
 
 class Generic(pygame.sprite.Sprite):
@@ -55,24 +54,26 @@ class Particle(Generic):
 
 
 class Tree(Generic):
-    def __init__(self, pos, surf, groups, name):
+    def __init__(self, pos, surf, groups, name, player_add):
         super().__init__(pos, surf, groups)
 
         self.health = 3 if name == 'Small' else 5
         self.alive = True
         self.stump_surf = pygame.image.load(f'../graphics/stumps/{name.lower()}.png').convert_alpha()
-        self.invul_timer = Timer(200)
 
         self.apple_surf = pygame.image.load('../graphics/fruits/apple.png')
         self.apple_pos = APPLE_POS[name]
         self.apple_sprites = pygame.sprite.Group()
         self.create_fruit()
 
+        self.player_add = player_add
+
     def damage(self):
         self.health -= 1
         if len(self.apple_sprites.sprites()) > 0:
             random_apple = choice(self.apple_sprites.sprites())
             Particle(random_apple.rect.topleft, random_apple.image, self.groups()[0], LAYERS['fruit'], 200)
+            self.player_add('apple')
             random_apple.kill()
 
     def check_death(self):
@@ -82,6 +83,7 @@ class Tree(Generic):
             self.rect = self.image.get_rect(midbottom=self.rect.midbottom)
             self.hitbox = self.rect.copy().inflate(-10, -self.rect.height * 0.6)
             self.alive = False
+            self.player_add('wood')
 
     def create_fruit(self):
         for x, y in self.apple_pos:
