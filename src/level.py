@@ -1,3 +1,5 @@
+from random import random
+
 import pygame
 from pytmx.util_pygame import load_pygame
 
@@ -27,7 +29,8 @@ class Level:
         self.transition = Transition(self.reset, self.player)
 
         self.rain = Rain(self.all_sprites)
-        self.raining = True
+        self.raining = random() < 0.7
+        self.soil_layer.raining = self.raining
 
     def setup(self):
         tmx_data = load_pygame('../data/map.tmx')
@@ -76,6 +79,10 @@ class Level:
 
     def reset(self):
         self.soil_layer.remove_water()
+        self.raining = random() < 0.7
+        self.soil_layer.raining = self.raining
+        if self.soil_layer.raining:
+            self.soil_layer.water_all()
 
         for tree in self.tree_sprites.sprites():
             for apple in tree.apple_sprites.sprites():
