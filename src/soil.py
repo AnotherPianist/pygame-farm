@@ -68,6 +68,15 @@ class SoilLayer:
                 self.grid[y][x].append('W')
                 WaterTile(soil_sprite.rect.topleft, choice(self.water_surfs), [self.all_sprites, self.water_sprites])
 
+    def remove_water(self):
+        for sprite in self.water_sprites.sprites():
+            sprite.kill()
+
+        for row in self.grid:
+            for cell in row:
+                if 'W' in cell:
+                    cell.remove('W')
+
     def create_soil_tiles(self):
         self.soil_sprites.empty()
         for i, row in enumerate(self.grid):
