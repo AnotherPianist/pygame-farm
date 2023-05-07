@@ -8,7 +8,7 @@ from src.player import Player
 from src.settings import LAYERS, SCREEN_WIDTH, SCREEN_HEIGHT, TILE_SIZE, PLAYER_TOOL_OFFSET
 from src.sky import Rain
 from src.soil import SoilLayer
-from src.sprites import Generic, Water, WildFlower, Tree, Interaction
+from src.sprites import Generic, Water, WildFlower, Tree, Interaction, Particle
 from src.support import import_folder
 from src.transition import Transition
 
@@ -90,9 +90,19 @@ class Level:
                 apple.kill()
             tree.create_fruit()
 
+    def plant_collision(self):
+        if self.soil_layer.plant_sprites:
+            for plant in self.soil_layer.plant_sprites.sprites():
+                if plant.harvestable and plant.rect.colliderect(self.player.hitbox):
+                    self.player_add(plant.plant_type)
+                    plant.kill()
+                    Particle(plant.rect.topleft, plant.image, self.all_sprites, LAYERS['main'])
+                    self.soil_layer.grid[plant.rect.centery // TILE_SIZE][plant.rect.centerx // TILE_SIZE].remove('P')
+
     def run(self, dt):
         self.all_sprites.custom_draw(self.player)
         self.all_sprites.update(dt)
+        self.plant_collision()
         self.overlay.display()
 
         if self.raining:
