@@ -4,6 +4,7 @@ from pytmx.util_pygame import load_pygame
 from src.overlay import Overlay
 from src.player import Player
 from src.settings import LAYERS, SCREEN_WIDTH, SCREEN_HEIGHT, TILE_SIZE, PLAYER_TOOL_OFFSET
+from src.sky import Rain
 from src.soil import SoilLayer
 from src.sprites import Generic, Water, WildFlower, Tree, Interaction
 from src.support import import_folder
@@ -24,6 +25,9 @@ class Level:
         self.setup()
         self.overlay = Overlay(self.player)
         self.transition = Transition(self.reset, self.player)
+
+        self.rain = Rain(self.all_sprites)
+        self.raining = True
 
     def setup(self):
         tmx_data = load_pygame('../data/map.tmx')
@@ -82,6 +86,9 @@ class Level:
         self.all_sprites.custom_draw(self.player)
         self.all_sprites.update(dt)
         self.overlay.display()
+
+        if self.raining:
+            self.rain.update()
 
         if self.player.sleep:
             self.transition.play()
