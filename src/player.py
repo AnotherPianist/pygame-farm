@@ -6,7 +6,7 @@ from src.timer import Timer
 
 
 class Player(pygame.sprite.Sprite):
-    def __init__(self, pos, group, collision_sprites, tree_sprites, interaction, soil_layer):
+    def __init__(self, pos, group, collision_sprites, tree_sprites, interaction, soil_layer, toggle_shop):
         super().__init__(group)
 
         self.animations = {}
@@ -42,11 +42,13 @@ class Player(pygame.sprite.Sprite):
 
         self.item_inventory = {'wood': 0, 'apple': 0, 'corn': 0, 'tomato': 0}
         self.seed_inventory = {'corn': 5, 'tomato': 5}
+        self.money = 200
 
         self.tree_sprites = tree_sprites
         self.interaction = interaction
         self.sleep = False
         self.soil_layer = soil_layer
+        self.toggle_shop = toggle_shop
 
 
     def import_assets(self):
@@ -110,7 +112,7 @@ class Player(pygame.sprite.Sprite):
                 collided_interaction_sprite = pygame.sprite.spritecollide(self, self.interaction, False)
                 if collided_interaction_sprite:
                     if collided_interaction_sprite[0].name == 'Trader':
-                        pass
+                        self.toggle_shop()
                     elif collided_interaction_sprite[0].name == 'Bed':
                         self.status = 'left_idle'
                         self.sleep = True
