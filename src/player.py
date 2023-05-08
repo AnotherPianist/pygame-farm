@@ -50,6 +50,9 @@ class Player(pygame.sprite.Sprite):
         self.soil_layer = soil_layer
         self.toggle_shop = toggle_shop
 
+        self.watering_sound = pygame.mixer.Sound('../audio/water.mp3')
+        self.watering_sound.set_volume(0.1)
+
 
     def import_assets(self):
         self.animations = {'up': [], 'down': [], 'left': [], 'right': [], 'up_idle': [], 'down_idle': [],
@@ -165,6 +168,7 @@ class Player(pygame.sprite.Sprite):
                 if tree.rect.collidepoint(self.target_pos):
                     tree.damage()
         elif self.selected_tool == 'water':
+            self.watering_sound.play()
             self.soil_layer.water(self.target_pos)
 
     def get_target_pos(self):
