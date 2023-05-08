@@ -30,7 +30,7 @@ class Level:
         self.transition = Transition(self.reset, self.player)
 
         self.rain = Rain(self.all_sprites)
-        self.raining = random() < 0.7
+        self.raining = random() < 0.3
         self.soil_layer.raining = self.raining
         self.sky = Sky()
 
@@ -97,7 +97,7 @@ class Level:
     def reset(self):
         self.soil_layer.update_plants()
         self.soil_layer.remove_water()
-        self.raining = random() < 0.7
+        self.raining = random() < 0.3
         self.soil_layer.raining = self.raining
         if self.soil_layer.raining:
             self.soil_layer.water_all()
